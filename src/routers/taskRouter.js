@@ -11,18 +11,26 @@ router.post('/task',auth, async(req,res)=>{
         res.status(200).send(new_task);
 
     }catch(err){
-        res.status(400).send("Server Error");
+        res.status(400).send();
 
     }
 })
 
 router.get('/task', auth,async(req,res)=>{
+    let match = {};
+    if(req.query.isCompleted){
+        match.isCompleted = req.query.isCompleted === 'true';
+    }
+
     try{
-        const task = await taskModel.find({author:req.user._id});
-        res.status(200).send(task)
+        const user = await req.user.populate({
+            path:'tasks',
+            match
+        });
+        res.status(200).send(user.tasks)
 
     }catch(err){
-        res.status(500).send();
+        res.status(500).send(err);
 
     }
 })
