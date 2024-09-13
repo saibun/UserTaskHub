@@ -80,6 +80,11 @@ A Node.js application for user authentication and task management, allowing user
 ```http
  GET /task
 ```
+#### Get limited tasks by pagination and sorting
+```http
+ GET /task?limit=2&skip=2&creadteAt_desc
+ GET /task?limit=2&skip=2&creadteAt_asc
+```
 #### Get a particular task with id
 ```http
  GET /task/:id
