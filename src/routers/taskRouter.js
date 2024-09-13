@@ -16,8 +16,22 @@ router.post('/task',auth, async(req,res)=>{
     }
 })
 
+// GET /task?isCompleted=true - give all completed task
+// GET /task?limit=5&skip=0 - give first 5 result with no skipping any result, limit-5&skip=5 skip first 5 result and start from second 5 results
+// GET /task?sortBy=createdAt_asc - give result where all task are in asending order as per their createAt property value.
 router.get('/task', auth,async(req,res)=>{
+    //----Filtering task as per completed or not-----
     let match = {};
+    let sort = {};
+    if(req.query.sortBy){
+        let key =req.query.sortBy.split("_")[0];
+        let value = req.query.sortBy.split("_")[1] === 'desc' ? -1:1;
+        sort[key] = value; 
+
+    }
+      
+
+    
     if(req.query.isCompleted){
         match.isCompleted = req.query.isCompleted === 'true';
     }
@@ -25,7 +39,12 @@ router.get('/task', auth,async(req,res)=>{
     try{
         const user = await req.user.populate({
             path:'tasks',
-            match
+            match,
+            options:{
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip),
+                sort
+            }
         });
         res.status(200).send(user.tasks)
 
